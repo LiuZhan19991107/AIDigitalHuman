@@ -1,0 +1,94 @@
+<svg width="1280" height="640" viewBox="0 0 1280 640" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="140" y1="40" x2="1110" y2="600" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF4EE"/>
+      <stop offset="0.55" stop-color="#FFF9F6"/>
+      <stop offset="1" stop-color="#F8F5FF"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="280" y1="120" x2="1010" y2="540" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FF6A3D"/>
+      <stop offset="1" stop-color="#FF9B6E"/>
+    </linearGradient>
+    <linearGradient id="cardStroke" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#FFE3D6"/>
+      <stop offset="1" stop-color="#F2E8FF"/>
+    </linearGradient>
+    <filter id="shadow" x="-80" y="-80" width="1440" height="800" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset dy="24"/>
+      <feGaussianBlur stdDeviation="30"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.941176 0 0 0 0 0.403922 0 0 0 0 0.219608 0 0 0 0.16 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1_1"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1_1" result="shape"/>
+    </filter>
+  </defs>
+
+  <rect width="1280" height="640" rx="36" fill="url(#bg)"/>
+  <circle cx="1085" cy="118" r="150" fill="#FFE4D8" fill-opacity="0.9"/>
+  <circle cx="1195" cy="98" r="68" fill="#FFD3C0" fill-opacity="0.72"/>
+  <circle cx="123" cy="546" r="140" fill="#F4EDFF"/>
+
+  <rect x="72" y="72" width="164" height="52" rx="26" fill="#FFFFFF" stroke="#FFD9CA"/>
+  <text x="114" y="105" fill="#FF6A3D" font-size="24" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" font-weight="700">天外说法</text>
+
+  <text x="72" y="204" fill="#202633" font-size="68" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" font-weight="800">AI 数字人展示与工作台项目</text>
+  <text x="72" y="266" fill="#556070" font-size="28" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">面向官网展示、工作台复刻、企业服务与用户访谈全流程的前端项目</text>
+
+  <rect x="72" y="314" width="180" height="52" rx="16" fill="url(#accent)"/>
+  <text x="111" y="347" fill="#FFFFFF" font-size="24" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" font-weight="700">React + Vite</text>
+
+  <rect x="268" y="314" width="174" height="52" rx="16" fill="#FFFFFF" stroke="#FFDACC"/>
+  <text x="312" y="347" fill="#202633" font-size="24" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" font-weight="700">TypeScript</text>
+
+  <rect x="458" y="314" width="150" height="52" rx="16" fill="#FFFFFF" stroke="#E5DDF8"/>
+  <text x="507" y="347" fill="#202633" font-size="24" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" font-weight="700">Vitest</text>
+
+  <g filter="url(#shadow)">
+    <rect x="708" y="96" width="476" height="448" rx="32" fill="#FFFFFF"/>
+    <rect x="708.75" y="96.75" width="474.5" height="446.5" rx="31.25" stroke="url(#cardStroke)" stroke-width="1.5"/>
+  </g>
+
+  <rect x="742" y="130" width="408" height="30" rx="15" fill="#FFF2EB"/>
+  <circle cx="770" cy="145" r="6" fill="#FF8D65"/>
+  <circle cx="792" cy="145" r="6" fill="#FFC59C"/>
+  <circle cx="814" cy="145" r="6" fill="#8DD8A6"/>
+  <text x="858" y="152" fill="#9A5A44" font-size="18" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" font-weight="700">天外说法 Workspace</text>
+
+  <rect x="742" y="184" width="132" height="316" rx="24" fill="#FFF8F4" stroke="#FFE0D2"/>
+  <text x="772" y="222" fill="#202633" font-size="22" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" font-weight="700">工作台</text>
+  <rect x="762" y="248" width="92" height="34" rx="12" fill="#FF6A3D"/>
+  <text x="784" y="271" fill="#FFFFFF" font-size="16" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" font-weight="700">创建视频</text>
+  <rect x="762" y="302" width="92" height="18" rx="9" fill="#FFE7DB"/>
+  <rect x="762" y="334" width="92" height="18" rx="9" fill="#FFF0E8"/>
+  <rect x="762" y="366" width="92" height="18" rx="9" fill="#FFF0E8"/>
+  <rect x="762" y="398" width="92" height="18" rx="9" fill="#FFF0E8"/>
+
+  <rect x="898" y="184" width="252" height="144" rx="24" fill="#FFF7F2" stroke="#FFE0D2"/>
+  <text x="928" y="228" fill="#202633" font-size="24" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" font-weight="800">创建数字人视频</text>
+  <text x="928" y="264" fill="#667085" font-size="18" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">关键词生成脚本</text>
+  <text x="928" y="294" fill="#667085" font-size="18" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">数字人选择 / 上传照片</text>
+  <rect x="928" y="312" width="120" height="10" rx="5" fill="#FFD9CB"/>
+  <rect x="928" y="334" width="168" height="10" rx="5" fill="#FFE8DF"/>
+
+  <rect x="898" y="346" width="116" height="154" rx="22" fill="#FFF9F7" stroke="#FFE0D2"/>
+  <text x="926" y="384" fill="#202633" font-size="20" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" font-weight="700">企业服务</text>
+  <text x="926" y="416" fill="#667085" font-size="16" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">效率</text>
+  <text x="926" y="446" fill="#FF6A3D" font-size="28" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" font-weight="800">300</text>
+  <text x="980" y="446" fill="#667085" font-size="15" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">条/月</text>
+  <text x="926" y="476" fill="#667085" font-size="16" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">获客率 0.1%</text>
+
+  <rect x="1034" y="346" width="116" height="154" rx="22" fill="#F9F6FF" stroke="#E6DEFA"/>
+  <text x="1060" y="384" fill="#202633" font-size="20" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" font-weight="700">访谈页</text>
+  <text x="1060" y="416" fill="#667085" font-size="16" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">需求池</text>
+  <text x="1060" y="446" fill="#7A5AF8" font-size="28" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" font-weight="800">30</text>
+  <text x="1098" y="446" fill="#667085" font-size="15" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">条</text>
+  <text x="1060" y="476" fill="#667085" font-size="16" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">P0 / P1 分层</text>
+
+  <text x="72" y="438" fill="#202633" font-size="30" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" font-weight="800">核心亮点</text>
+  <text x="72" y="480" fill="#556070" font-size="24" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">• 多页面高保真复刻   • 中文品牌化统一   • 静态页与 React 路由融合</text>
+  <text x="72" y="520" fill="#556070" font-size="24" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif">• 工作台场景完整呈现   • 企业服务数据展示   • 用户访谈结果可视化</text>
+
+  <rect x="72" y="554" width="278" height="34" rx="17" fill="#FFFFFF" stroke="#F0DCCE"/>
+  <text x="99" y="577" fill="#7A4A39" font-size="18" font-family="Segoe UI, Microsoft YaHei, Arial, sans-serif" font-weight="700">Routes: /workspace /enterprise-service /pricing</text>
+</svg>

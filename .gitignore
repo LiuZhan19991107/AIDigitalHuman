@@ -10,6 +10,9 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+.vite
+.cache
+coverage
 *.local
 
 # Editor directories and files
@@ -29,3 +32,7 @@ dist-ssr
 
 # Local media files
 public/pricing/assets/user-interview-flow.mp4
+*.mp4
+*.mov
+*.avi
+*.webm
