@@ -1,0 +1,1755 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>医疗法务数字人｜用户访谈驱动的产品设计</title>
+  <style>
+    :root {
+      --brand-color: #ff7752;
+      --brand-hover: #ff9275;
+      --brand-active: #e1542e;
+      --brand-deep: #eb3200;
+      --brand-bg: #fff8f6;
+      --brand-bg-hover: #fff1ee;
+      --brand-border: #ffd6cb;
+      --gradient-brand: linear-gradient(90deg, #ff673e 21.5%, #ff3729 100%);
+      --gradient-brand-hover: linear-gradient(90deg, #e65d38 0%, #e63225 100%);
+      --gradient-warm-card: linear-gradient(180deg, #ffe3d9 0%, #fff9f7 100%);
+      --gradient-soft-page: linear-gradient(180deg, #f7f8fa 6.7%, #ffffff 100%);
+      --gradient-ai-assistant: linear-gradient(-17deg, rgb(35,214,255) 8%, rgb(94,122,255) 85%, rgb(232,136,255) 100%);
+      --text-primary: #1d2129;
+      --text-title: #1f1f1f;
+      --text-regular: #434343;
+      --text-secondary: #4e5969;
+      --text-tertiary: #86909c;
+      --surface-white: #ffffff;
+      --page-bg: #f7f8fa;
+      --surface-muted: #f5f5f5;
+      --surface-subtle: #f2f3f5;
+      --line: #edeff3;
+      --line-strong: #e5e6ec;
+      --success: #00b42a;
+      --danger: #f54b45;
+      --warning: #ff9a1d;
+      --info-blue: #027fff;
+      --purple: #9142ff;
+      --shadow-soft: 0 6px 30px rgba(0,0,0,.05);
+      --shadow-panel: 0 8px 32px rgba(20,24,36,.12);
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
+      --radius-2xl: 20px;
+      --radius-pill: 100px;
+      --font-sans: "PingFang SC", "Helvetica Neue", Helvetica, "Microsoft YaHei", Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 8% 4%, rgba(255, 119, 82, .10), transparent 28%),
+        radial-gradient(circle at 92% 20%, rgba(255, 154, 29, .11), transparent 25%),
+        var(--gradient-soft-page);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 119, 82, .055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 119, 82, .045) 1px, transparent 1px);
+      background-size: 72px 72px;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,.72), transparent 58%);
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    button {
+      font: inherit;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+    }
+
+    .section,
+    .hero {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 76px 24px;
+      scroll-margin-top: 78px;
+    }
+
+    .hero {
+      min-height: calc(100vh - 64px);
+      display: grid;
+      grid-template-columns: minmax(0, 1.02fr) minmax(420px, .98fr);
+      gap: 48px;
+      align-items: center;
+      padding-top: 40px;
+      padding-bottom: 72px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 18px;
+      padding: 7px 12px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--brand-border);
+      background: var(--brand-bg);
+      color: var(--brand-deep);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--brand-color);
+      box-shadow: 0 0 0 5px rgba(255, 119, 82, .16);
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      max-width: 650px;
+      margin-bottom: 20px;
+      color: var(--text-title);
+      font-size: clamp(42px, 5.6vw, 72px);
+      line-height: 1.05;
+      letter-spacing: 0;
+      font-weight: 750;
+    }
+
+    .hero-lead {
+      max-width: 640px;
+      margin-bottom: 24px;
+      color: var(--text-secondary);
+      font-size: 18px;
+      line-height: 1.85;
+    }
+
+    .hero-actions,
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .hero-actions {
+      margin: 30px 0 28px;
+    }
+
+    .hero-inline-video {
+      margin-top: 30px;
+      overflow: hidden;
+      border-radius: 22px;
+      border: 1px solid var(--brand-border);
+      background: rgba(255, 255, 255, .86);
+      box-shadow: 0 18px 40px rgba(29, 33, 41, .08);
+    }
+
+    .hero-inline-video video {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #000;
+      object-fit: cover;
+    }
+
+    .btn {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 20px;
+      border-radius: var(--radius-pill);
+      font-weight: 650;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      color: #fff9f7;
+      background: var(--gradient-brand);
+      box-shadow: 0 12px 28px rgba(235, 50, 0, .18);
+    }
+
+    .btn-secondary {
+      color: var(--text-primary);
+      background: var(--surface-white);
+      border: 1px solid var(--line);
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 30px;
+      padding: 0 12px;
+      border-radius: var(--radius-pill);
+      color: var(--text-secondary);
+      background: var(--surface-white);
+      border: 1px solid var(--line);
+      box-shadow: 0 4px 14px rgba(20,24,36,.035);
+      font-size: 13px;
+    }
+
+    .hero-visual {
+      position: relative;
+      min-height: 620px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .product-shell {
+      width: min(100%, 520px);
+      margin-top: 120px;
+      border-radius: 28px;
+      background: rgba(255,255,255,.88);
+      border: 1px solid rgba(237,239,243,.96);
+      box-shadow: var(--shadow-panel);
+      overflow: hidden;
+    }
+
+    .product-bar {
+      height: 54px;
+      padding: 0 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,.72);
+    }
+
+    .window-dots {
+      display: flex;
+      gap: 7px;
+    }
+
+    .window-dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ffc9ba;
+    }
+
+    .window-dots span:nth-child(2) { background: #ffd6a3; }
+    .window-dots span:nth-child(3) { background: #9be7ad; }
+
+    .status-pill {
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      color: var(--success);
+      background: rgba(0,180,42,.08);
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .product-body {
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .input-card {
+      padding: 16px;
+      border-radius: 18px;
+      background: var(--gradient-warm-card);
+      border: 1px solid var(--brand-border);
+    }
+
+    .input-label {
+      margin-bottom: 8px;
+      color: var(--brand-deep);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .input-value {
+      color: var(--text-title);
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .workflow-preview {
+      display: grid;
+      grid-template-columns: .8fr 1.2fr;
+      gap: 14px;
+    }
+
+    .avatar-card {
+      position: relative;
+      min-height: 250px;
+      border-radius: 18px;
+      background:
+        linear-gradient(180deg, rgba(255,248,246,.95), rgba(255,255,255,.96)),
+        radial-gradient(circle at 50% 18%, rgba(255,119,82,.35), transparent 32%);
+      border: 1px solid var(--line);
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .avatar {
+      width: 120px;
+      height: 162px;
+      border-radius: 60px 60px 28px 28px;
+      background:
+        radial-gradient(circle at 50% 26%, #ffe3d9 0 25px, transparent 26px),
+        linear-gradient(180deg, #1d2129 0 26%, #434343 26% 100%);
+      position: relative;
+      box-shadow: 0 14px 36px rgba(29,33,41,.12);
+    }
+
+    .avatar::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 22px;
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 36% 42%, #1d2129 0 2px, transparent 3px),
+        radial-gradient(circle at 64% 42%, #1d2129 0 2px, transparent 3px),
+        linear-gradient(#f7c8b8, #ffd9cb);
+      transform: translateX(-50%);
+      border: 4px solid #3a2c29;
+    }
+
+    .avatar::after {
+      content: "1:28";
+      position: absolute;
+      left: 50%;
+      bottom: 14px;
+      transform: translateX(-50%);
+      padding: 4px 9px;
+      border-radius: var(--radius-pill);
+      background: rgba(255,255,255,.92);
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .script-stack {
+      display: grid;
+      gap: 10px;
+    }
+
+    .mini-card {
+      padding: 13px;
+      border-radius: 14px;
+      background: var(--surface-white);
+      border: 1px solid var(--line);
+    }
+
+    .mini-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 9px;
+      font-weight: 700;
+      color: var(--text-title);
+    }
+
+    .mini-badge {
+      padding: 2px 7px;
+      border-radius: var(--radius-pill);
+      color: var(--brand-deep);
+      background: var(--brand-bg);
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .line {
+      height: 7px;
+      margin-top: 7px;
+      border-radius: var(--radius-pill);
+      background: var(--surface-subtle);
+    }
+
+    .line.w70 { width: 70%; }
+    .line.w86 { width: 86%; }
+    .line.w50 { width: 50%; }
+
+    .ab-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .ab-cell {
+      padding: 12px;
+      border-radius: 14px;
+      background: var(--surface-subtle);
+    }
+
+    .ab-value {
+      color: var(--text-title);
+      font-size: 22px;
+      line-height: 1;
+      font-weight: 800;
+    }
+
+    .ab-label {
+      margin-top: 6px;
+      color: var(--text-tertiary);
+      font-size: 12px;
+    }
+
+    .section-head {
+      max-width: 720px;
+      margin-bottom: 30px;
+    }
+
+    .section-kicker {
+      margin-bottom: 10px;
+      color: var(--brand-deep);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    h2 {
+      margin-bottom: 12px;
+      color: var(--text-title);
+      font-size: clamp(28px, 3.2vw, 40px);
+      line-height: 1.18;
+      font-weight: 750;
+      letter-spacing: 0;
+    }
+
+    .section-desc {
+      color: var(--text-secondary);
+      font-size: 16px;
+      line-height: 1.8;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .prep-card,
+    .finding-card,
+    .tier-card,
+    .module-card,
+    .roadmap-card {
+      background: var(--surface-white);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-soft);
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+
+    .prep-card:hover,
+    .finding-card:hover,
+    .tier-card:hover,
+    .module-card:hover,
+    .roadmap-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--brand-border);
+      box-shadow: 0 10px 32px rgba(235, 50, 0, .08);
+    }
+
+    .prep-card {
+      cursor: pointer;
+      padding: 20px;
+      min-height: 150px;
+      text-align: left;
+    }
+
+    .prep-card.active,
+    .step.active,
+    .flow-chip.active {
+      color: var(--brand-deep);
+      background: var(--brand-bg);
+      border-color: var(--brand-color);
+      box-shadow: 0 0 0 1px rgba(255,119,82,.14) inset, 0 10px 32px rgba(235, 50, 0, .08);
+    }
+
+    .card-icon {
+      width: 38px;
+      height: 38px;
+      margin-bottom: 16px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      color: var(--brand-deep);
+      background: var(--brand-bg);
+      font-weight: 800;
+    }
+
+    .card-title {
+      margin-bottom: 8px;
+      color: var(--text-title);
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .card-copy {
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.75;
+    }
+
+    .evidence-panel,
+    .qa-panel,
+    .material-panel {
+      margin-top: 16px;
+      padding: 18px;
+      border-radius: 22px;
+      background: var(--surface-white);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .evidence-grid {
+      display: grid;
+      grid-template-columns: 320px minmax(0, 1fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .record-shot {
+      min-height: 230px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: #fbfcfd;
+      padding: 10px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .record-shot img,
+    .material-shot img {
+      width: 100%;
+      height: 100%;
+      min-height: 106px;
+      object-fit: cover;
+      border-radius: 12px;
+      display: block;
+    }
+
+    .record-shot img:first-child {
+      grid-column: 1 / -1;
+      min-height: 170px;
+    }
+
+    .evidence-detail {
+      display: none;
+    }
+
+    .evidence-detail.active {
+      display: block;
+    }
+
+    .evidence-title {
+      color: var(--text-title);
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .evidence-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0 0;
+    }
+
+    .process-panel,
+    .table-panel,
+    .split-panel,
+    .priority-panel,
+    .proof-panel {
+      padding: 22px;
+      border-radius: 24px;
+      background: var(--surface-white);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(9, minmax(92px, 1fr));
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .step {
+      appearance: none;
+      border: 1px solid transparent;
+      cursor: pointer;
+      position: relative;
+      min-height: 72px;
+      padding: 12px;
+      border-radius: 14px;
+      background: var(--surface-subtle);
+      color: var(--text-secondary);
+      font-weight: 650;
+      line-height: 1.45;
+      text-align: left;
+    }
+
+    .step:hover {
+      color: var(--brand-deep);
+      background: var(--brand-bg);
+      border-color: var(--brand-border);
+    }
+
+    .step-num {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text-tertiary);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .qa-card {
+      display: none;
+    }
+
+    .qa-card.active {
+      display: grid;
+      grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+      gap: 16px;
+    }
+
+    .qa-box {
+      padding: 16px;
+      border-radius: 16px;
+      background: #fbfcfd;
+      border: 1px solid var(--line);
+    }
+
+    .qa-label {
+      margin-bottom: 8px;
+      color: var(--brand-deep);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .qa-text {
+      color: var(--text-title);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.65;
+    }
+
+    .qa-answer {
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+
+    .qa-list {
+      margin: 0;
+      padding-left: 22px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .qa-list li::marker {
+      color: var(--brand-deep);
+      font-weight: 800;
+    }
+
+    .qa-profile {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+    }
+
+    .profile-line {
+      display: grid;
+      grid-template-columns: 86px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+    }
+
+    .profile-line dt {
+      color: var(--text-title);
+      font-weight: 800;
+    }
+
+    .profile-line dd {
+      margin: 0;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .data-layout {
+      display: grid;
+      grid-template-columns: 310px minmax(0, 1fr);
+      gap: 18px;
+    }
+
+    .metric-stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .metric-card {
+      padding: 18px;
+      border-radius: var(--radius-xl);
+      background: var(--surface-white);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .metric-value {
+      color: var(--brand-deep);
+      font-size: 32px;
+      line-height: 1;
+      font-weight: 800;
+    }
+
+    .metric-label {
+      margin-top: 8px;
+      color: var(--text-secondary);
+      font-weight: 650;
+    }
+
+    .findings-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .finding-card {
+      padding: 18px;
+      min-height: 150px;
+    }
+
+    .finding-index {
+      width: 28px;
+      height: 28px;
+      margin-bottom: 14px;
+      display: grid;
+      place-items: center;
+      border-radius: 9px;
+      color: #fff9f7;
+      background: var(--gradient-brand);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .analysis-flow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .flow-chip {
+      appearance: none;
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 10px;
+      border-radius: 14px;
+      background: var(--brand-bg);
+      color: var(--brand-deep);
+      border: 1px solid var(--brand-border);
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .material-card {
+      display: none;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .material-card.active {
+      display: grid;
+    }
+
+    .material-shot {
+      min-height: 180px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, #fff8f6, #fff);
+      display: grid;
+      place-items: center;
+      color: var(--text-tertiary);
+      text-align: center;
+      padding: 10px;
+      overflow: hidden;
+    }
+
+    .material-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      width: 100%;
+    }
+
+    .material-stat {
+      padding: 14px 10px;
+      border-radius: 14px;
+      background: var(--surface-white);
+      border: 1px solid var(--line);
+    }
+
+    .material-stat strong {
+      display: block;
+      color: var(--brand-deep);
+      font-size: 22px;
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+
+    .material-stat span {
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+    }
+
+    .demand-snapshot {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background: var(--surface-white);
+      box-shadow: 0 18px 50px rgba(27, 38, 54, .08);
+    }
+
+    .snapshot-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #fff 0%, #f8fafc 100%);
+    }
+
+    .snapshot-title {
+      color: var(--text-title);
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .snapshot-note {
+      margin-top: 4px;
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .snapshot-tags {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+      flex: none;
+    }
+
+    .snapshot-tags span {
+      padding: 7px 10px;
+      border-radius: 999px;
+      color: var(--brand-deep);
+      background: var(--brand-bg);
+      border: 1px solid rgba(255, 119, 82, .28);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .snapshot-grid {
+      display: grid;
+      gap: 16px;
+      padding: 16px;
+    }
+
+    .snapshot-shot {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #f8fafc;
+    }
+
+    .snapshot-shot img {
+      width: 100%;
+      display: block;
+    }
+
+    table {
+      width: 100%;
+      min-width: 760px;
+      border-collapse: collapse;
+      background: var(--surface-white);
+    }
+
+    th,
+    td {
+      padding: 14px 16px;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid var(--line);
+    }
+
+    th {
+      color: var(--text-title);
+      background: var(--surface-subtle);
+      font-size: 13px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    td {
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .code {
+      color: var(--brand-deep);
+      font-weight: 800;
+    }
+
+    .pain-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .tier-card {
+      padding: 20px;
+    }
+
+    .tier-card.pain { background: linear-gradient(180deg, #fff1ee, #fff); }
+    .tier-card.itch { background: linear-gradient(180deg, #f6f7f9, #fff); }
+    .tier-card.delight { background: linear-gradient(180deg, #f5f4ff, #fff); }
+
+    .tier-label {
+      margin-bottom: 14px;
+      font-size: 18px;
+      color: var(--text-title);
+      font-weight: 800;
+    }
+
+    .clean-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 10px;
+    }
+
+    .clean-list li {
+      position: relative;
+      padding-left: 18px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .clean-list li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: .68em;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--brand-color);
+    }
+
+    .priority-row {
+      display: grid;
+      grid-template-columns: 110px minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+      padding: 14px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .priority-row:first-child { border-top: none; padding-top: 0; }
+
+    .priority-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 34px;
+      border-radius: var(--radius-pill);
+      color: #fff9f7;
+      background: var(--gradient-brand);
+      font-weight: 800;
+    }
+
+    .priority-badge.p1 { background: #4e5969; }
+    .priority-badge.p2 { background: linear-gradient(90deg, #5e7aff, #9142ff); }
+
+    .priority-copy {
+      color: var(--text-secondary);
+    }
+
+    .priority-list {
+      margin: 0;
+      padding-left: 22px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px 26px;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+
+    .priority-list li::marker {
+      color: var(--brand-deep);
+      font-weight: 800;
+    }
+
+    .mapping-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .mapping-card {
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1fr) 40px minmax(0, 1fr) 40px minmax(0, 1fr);
+      gap: 12px;
+      align-items: stretch;
+      padding: 16px;
+      border-radius: 18px;
+      background: var(--surface-white);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .map-id {
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      color: var(--brand-deep);
+      background: var(--brand-bg);
+      font-weight: 850;
+    }
+
+    .map-cell {
+      padding: 12px;
+      border-radius: 14px;
+      background: #fbfcfd;
+      border: 1px solid var(--line);
+    }
+
+    .map-label {
+      margin-bottom: 6px;
+      color: var(--text-tertiary);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .map-value {
+      color: var(--text-title);
+      font-weight: 700;
+      line-height: 1.6;
+    }
+
+    .map-arrow {
+      display: grid;
+      place-items: center;
+      color: var(--brand-color);
+      font-weight: 900;
+      font-size: 18px;
+    }
+
+    .fit-note {
+      display: inline-flex;
+      margin-top: 8px;
+      padding: 6px 9px;
+      border-radius: 999px;
+      color: var(--brand-deep);
+      background: var(--brand-bg);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .module-preview {
+      border-radius: 22px;
+      background: #fbfcfd;
+      border: 1px solid var(--line);
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .module-card {
+      padding: 16px;
+    }
+
+    .module-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      color: var(--text-title);
+      font-weight: 800;
+    }
+
+    .module-tag {
+      padding: 3px 8px;
+      border-radius: var(--radius-pill);
+      background: var(--brand-bg);
+      color: var(--brand-deep);
+      font-size: 12px;
+    }
+
+    .roadmap {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .roadmap-card {
+      position: relative;
+      padding: 22px;
+      overflow: hidden;
+    }
+
+    .roadmap-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 4px;
+      background: var(--gradient-brand);
+    }
+
+    .roadmap-stage {
+      display: inline-flex;
+      margin-bottom: 18px;
+      padding: 5px 10px;
+      border-radius: var(--radius-pill);
+      background: var(--brand-bg);
+      color: var(--brand-deep);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .roadmap-list {
+      margin: 16px 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 9px;
+    }
+
+    .roadmap-list li {
+      position: relative;
+      padding-left: 16px;
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .roadmap-list li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: .7em;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--brand-color);
+    }
+
+    .assistant-float {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 28;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px 10px 10px;
+      border-radius: var(--radius-pill);
+      background: var(--surface-white);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-panel);
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .assistant-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: var(--gradient-ai-assistant);
+      font-weight: 800;
+    }
+
+    @media (max-width: 1080px) {
+      .hero,
+      .mapping-card,
+      .data-layout {
+        grid-template-columns: 1fr;
+      }
+      .hero-visual { min-height: auto; }
+      .product-shell { margin-top: 0; }
+      .card-grid,
+      .roadmap {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .steps,
+      .analysis-flow {
+        grid-template-columns: repeat(5, minmax(120px, 1fr));
+      }
+    }
+
+    @media (max-width: 720px) {
+      .section,
+      .hero {
+        padding: 52px 16px;
+        scroll-margin-top: 70px;
+      }
+      .hero {
+        min-height: auto;
+        padding-top: 30px;
+      }
+      h1 { font-size: 40px; }
+      .hero-lead,
+      .section-desc { font-size: 15px; }
+      .product-shell {
+        margin-top: 0;
+        border-radius: 20px;
+      }
+      .workflow-preview,
+      .card-grid,
+      .findings-grid,
+      .pain-grid,
+      .roadmap,
+      .analysis-flow,
+      .evidence-grid,
+      .qa-card.active,
+      .material-card {
+        grid-template-columns: 1fr;
+      }
+      .ab-row { grid-template-columns: 1fr; }
+      .process-panel,
+      .table-panel,
+      .split-panel,
+      .priority-panel,
+      .proof-panel {
+        padding: 16px;
+        border-radius: 18px;
+      }
+      .priority-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+      .map-arrow {
+        min-height: 20px;
+        transform: rotate(90deg);
+      }
+      .assistant-float {
+        right: 14px;
+        bottom: 14px;
+        padding-right: 10px;
+      }
+      .assistant-float span:last-child { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero" id="hero">
+      <div>
+        <div class="eyebrow"><span class="pulse"></span>用户访谈驱动的产品设计</div>
+        <h1>用户访谈</h1>
+        <p class="hero-lead">从真实业务访谈出发，梳理医疗法务内容生产的核心卡点，推导数字人口播产品的功能闭环。</p>
+        <div class="hero-inline-video">
+          <video autoplay muted loop playsinline controls preload="metadata">
+            <source src="assets/user-interview-flow.mp4" type="video/mp4">
+          </video>
+        </div>
+      </div>
+
+      <div class="hero-visual" aria-label="AI数字人内容生产流程预览">
+        <div class="product-shell">
+          <div class="product-bar">
+            <div class="window-dots"><span></span><span></span><span></span></div>
+            <div class="status-pill">合规审核通过</div>
+          </div>
+          <div class="product-body">
+            <div class="input-card">
+              <div class="input-label">输入主题</div>
+              <div class="input-value">医疗纠纷赔偿如何维权？</div>
+            </div>
+            <div class="workflow-preview">
+              <div class="avatar-card">
+                <div class="avatar"></div>
+              </div>
+              <div class="script-stack">
+                <div class="mini-card">
+                  <div class="mini-title">AI 普法脚本 <span class="mini-badge">已生成</span></div>
+                  <div class="line w86"></div>
+                  <div class="line w70"></div>
+                  <div class="line w50"></div>
+                </div>
+                <div class="mini-card">
+                  <div class="mini-title">敏感信息检测 <span class="mini-badge">0 风险</span></div>
+                  <div class="line w70"></div>
+                  <div class="line w86"></div>
+                </div>
+                <div class="mini-card">
+                  <div class="mini-title">AB 测试记录 <span class="mini-badge">进行中</span></div>
+                  <div class="ab-row">
+                    <div class="ab-cell">
+                      <div class="ab-value">1.8x</div>
+                      <div class="ab-label">生产效率</div>
+                    </div>
+                    <div class="ab-cell">
+                      <div class="ab-value">30m</div>
+                      <div class="ab-label">目标耗时</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="prep">
+      <div class="section-head">
+        <div class="section-kicker">01 访谈前准备</div>
+        <h2>访谈准备</h2>
+        <p class="section-desc">准备阶段形成了团队分工、用户画像框架、十一类访谈模块和现场影像记录。下方卡片均对应《访谈问题汇总.pdf》的真实内容。</p>
+      </div>
+      <div class="card-grid">
+        <button class="prep-card active" data-prep="roles"><div class="card-icon">01</div><div class="card-title">团队分工</div><div class="card-copy">PDF 中明确组长、主访谈、摄影、剪辑、研发、书记员等角色，保证采集和复盘闭环。</div></button>
+        <button class="prep-card" data-prep="outline"><div class="card-icon">02</div><div class="card-title">用户画像</div><div class="card-copy">从基础、地理、家庭、职业、行为、诉求、功能偏好七类维度理解受访用户。</div></button>
+        <button class="prep-card" data-prep="filter"><div class="card-icon">03</div><div class="card-title">问题框架</div><div class="card-copy">围绕业务背景、内容发布、痛点、形象声音、合规、商业模式、预算周期设计问题。</div></button>
+        <button class="prep-card" data-prep="record"><div class="card-icon">04</div><div class="card-title">记录资产</div><div class="card-copy">访谈后沉淀文字记录、文档总结、录音记录、照片记录、视频记录、调研复盘和 DEMO。</div></button>
+        <button class="prep-card" data-prep="camera"><div class="card-icon">05</div><div class="card-title">现场影像</div><div class="card-copy">现场多角度照片记录受访者、访谈环境、讨论状态，作为汇报中的真实证据。</div></button>
+        <button class="prep-card" data-prep="follow"><div class="card-icon">06</div><div class="card-title">节奏备忘</div><div class="card-copy">前 10 分钟聊背景，中间 30 分钟按模块过渡，最后 10 分钟回到产品目标。</div></button>
+      </div>
+      <div class="evidence-panel">
+        <div class="evidence-grid">
+          <div class="record-shot">
+            <img src="assets/interview-prep-01.jpg" alt="访谈筹备与现场记录">
+            <img src="assets/interview-wide-01.jpg" alt="访谈现场全景">
+            <img src="assets/interview-close-01.jpg" alt="受访者近景交流">
+          </div>
+          <div>
+            <div class="evidence-detail active" data-prep-panel="roles">
+              <div class="evidence-title">团队分工记录</div>
+              <p class="card-copy">《访谈问题汇总.pdf》第一页记录了团队分工：刘湛负责组长/主访谈/研发，曹一凡负责摄影，李淼负责剪辑，同时设置书记员角色，确保现场提问、影像、文字材料和后续 DEMO 都有人承接。</p>
+              <div class="evidence-meta"><span class="tag">来源：访谈问题汇总 P1</span><span class="tag">素材：现场照片 8 张</span></div>
+            </div>
+            <div class="evidence-detail" data-prep-panel="outline">
+              <div class="evidence-title">用户画像框架</div>
+              <p class="card-copy">访谈前先定义用户画像：姓名、年龄、性别、城市、家庭角色、职业岗位、收入、使用频次、核心诉求、常用功能和未用功能。这个框架用于避免只问“想要什么功能”，而忽略用户是谁、在哪里用、为什么用。</p>
+              <div class="evidence-meta"><span class="tag">来源：访谈问题汇总 P1-P2</span><span class="tag">字段：7 类画像维度</span></div>
+            </div>
+            <div class="evidence-detail" data-prep-panel="filter">
+              <div class="evidence-title">十一类问题框架</div>
+              <p class="card-copy">提纲覆盖业务背景与目标、不方便出镜、节约成本、内容形态与脚本、数字人形象与声音、合规肖像审美边界、合规与安全、商业模式、运营与技术、预算周期、竞品参考。</p>
+              <div class="evidence-meta"><span class="tag">来源：访谈问题汇总 P3-P8</span><span class="tag">模块：11 类</span></div>
+            </div>
+            <div class="evidence-detail" data-prep-panel="record">
+              <div class="evidence-title">记录资产清单</div>
+              <p class="card-copy">PDF 后半段明确沉淀访谈记录、文字记录、文档总结、录音记录、照片记录、视频记录、调研复盘、可视化方案报告和 DEMO，说明访谈不是一次性聊天，而是后续产品设计的证据库。</p>
+              <div class="evidence-meta"><span class="tag">来源：访谈问题汇总 P13-P15</span><span class="tag">资产：8 类</span></div>
+            </div>
+            <div class="evidence-detail" data-prep-panel="camera">
+              <div class="evidence-title">现场照片记录</div>
+              <p class="card-copy">现场照片呈现了围桌访谈、电脑同步记录、受访者佩戴麦克风、团队多人围绕问题追问的状态，可用于证明信息来自真实访谈而非产品侧自设假设。</p>
+              <div class="evidence-meta"><span class="tag">来源：微信图片 20260704</span><span class="tag">素材：会议全景/近景/追问场景</span></div>
+            </div>
+            <div class="evidence-detail" data-prep-panel="follow">
+              <div class="evidence-title">访谈节奏备忘</div>
+              <p class="card-copy">提纲明确节奏：前 10 分钟聊业务背景，让业务方进入状态；中间 30 分钟按模块自然过渡；最后 10 分钟回到“最希望产品做到什么”。同时强调记录带情绪的原话，因为它们往往是真实需求信号。</p>
+              <div class="evidence-meta"><span class="tag">来源：访谈问题汇总 P8</span><span class="tag">方法：原话记录 + 模块追问</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="execute">
+      <div class="section-head">
+        <div class="section-kicker">02 正式访谈执行</div>
+        <h2>访谈执行</h2>
+        <p class="section-desc">访谈问题来自《访谈问题汇总.pdf》的正式提纲，下面每个节点都能看到对应问题、用户反馈和产品侧提取信息。</p>
+      </div>
+      <div class="process-panel">
+        <div class="steps" aria-label="访谈路径">
+          <button class="step active" data-qa="business"><span class="step-num">01</span>用户场景</button>
+          <button class="step" data-qa="workflow"><span class="step-num">02</span>生产流程</button>
+          <button class="step" data-qa="cost"><span class="step-num">03</span>团队成本</button>
+          <button class="step" data-qa="risk"><span class="step-num">04</span>平台违规</button>
+          <button class="step" data-qa="standard"><span class="step-num">05</span>脚本形态</button>
+          <button class="step" data-qa="avatar"><span class="step-num">06</span>形象声音</button>
+          <button class="step" data-qa="pay"><span class="step-num">07</span>预算周期</button>
+          <button class="step" data-qa="metric"><span class="step-num">08</span>商业转化</button>
+          <button class="step" data-qa="test"><span class="step-num">09</span>MVP验证</button>
+        </div>
+      </div>
+      <div class="qa-panel">
+        <div class="qa-card active" data-qa-panel="business">
+          <div class="qa-box">
+            <div class="qa-label">用户画像</div>
+            <dl class="qa-profile">
+              <div class="profile-line"><dt>用户</dt><dd>医疗法务律师团队及内容运营同学，负责把律师专业能力转化成短视频普法内容。</dd></div>
+              <div class="profile-line"><dt>职业属性</dt><dd>律师本人承担专业表达和可信背书，运营侧承担选题、脚本、拍摄、剪辑和发布。</dd></div>
+              <div class="profile-line"><dt>行为属性</dt><dd>已在抖音、小红书持续做真人出镜普法，单条视频约 3 分钟，流程运行两年多。</dd></div>
+              <div class="profile-line"><dt>核心诉求</dt><dd>律师出差或无法出镜时，内容仍能稳定产出，同时保持律师专业形象和合规边界。</dd></div>
+              <div class="profile-line"><dt>功能偏好</dt><dd>优先要能选律师数字人、写脚本、生成视频、保存作品草稿，再逐步增强脚本、声音、模板和合规能力。</dd></div>
+            </dl>
+          </div>
+          <div class="qa-box">
+            <div class="qa-label">场景还原</div>
+            <dl class="qa-profile">
+              <div class="profile-line"><dt>Who</dt><dd>医疗法务律师和运营团队共同使用。</dd></div>
+              <div class="profile-line"><dt>When</dt><dd>律师出差、无法集中拍摄，或运营需要快速补齐短视频内容时。</dd></div>
+              <div class="profile-line"><dt>Where</dt><dd>律所内容生产场景，主要面向抖音、小红书等线上平台。</dd></div>
+              <div class="profile-line"><dt>What</dt><dd>围绕医疗纠纷、医患矛盾、赔偿维权等主题制作普法口播视频。</dd></div>
+              <div class="profile-line"><dt>How</dt><dd>从数字人库选择律师形象，进入 AI 创作，填写脚本生成视频，并在我的页面沉淀作品和草稿。</dd></div>
+            </dl>
+          </div>
+        </div>
+        <div class="qa-card" data-qa-panel="workflow">
+          <div class="qa-box"><div class="qa-label">访谈问题</div><div class="qa-text"><ol class="qa-list"><li>目前是否在做短视频、图文、直播或公众号？</li><li>一周大概发布多少条内容？</li><li>从选题到发布，完整流程走哪些环节？</li></ol></div></div>
+          <div class="qa-box"><div class="qa-label">真实总结 / 提取信息</div><div class="qa-answer"><ol class="qa-list"><li>当前主要在抖音、小红书双平台持续产出普法视频。</li><li>真人实拍模式已经运行两年多，说明业务流程真实存在且稳定。</li><li>数字人不是重建流程，而是替换现有流程里的拍摄环节，降低断更风险。</li></ol></div></div>
+        </div>
+        <div class="qa-card" data-qa-panel="cost">
+          <div class="qa-box"><div class="qa-label">访谈问题</div><div class="qa-text"><ol class="qa-list"><li>目前真人出镜做一条视频，完整时间成本是多少？</li><li>哪一项工作最占用团队精力？</li><li>如果成本降下来，希望内容生产频率怎么变化？</li></ol></div></div>
+          <div class="qa-box"><div class="qa-label">真实总结 / 提取信息</div><div class="qa-answer"><ol class="qa-list"><li>单条约 3 分钟视频，从准备到发布大约需要 30 分钟至 1 小时。</li><li>瓶颈集中在律师出差无法拍摄，以及字幕、降噪、选片段、筛脚本等后期重复劳动。</li><li>用户希望用数字人降低对律师现场拍摄的依赖，让内容在律师不在场时也能继续产出。</li></ol></div></div>
+        </div>
+        <div class="qa-card" data-qa-panel="risk">
+          <div class="qa-box"><div class="qa-label">访谈问题</div><div class="qa-text"><ol class="qa-list"><li>医疗法务内容最容易踩哪些平台或合规风险？</li><li>哪些表达不能出现在脚本或视频里？</li><li>如果产品能自动标记法律引用错误或违规表述，价值大吗？</li></ol></div></div>
+          <div class="qa-box"><div class="qa-label">真实总结 / 提取信息</div><div class="qa-answer"><ol class="qa-list"><li>风险集中在医疗案例隐私、法律条文准确性和平台敏感表达。</li><li>“包赢”“保证胜诉”等绝对化表述需要被识别和规避。</li><li>后续功能应补齐敏感词检测、法律条文校验、医疗内容合规检测、风险分级和自定义规则库。</li></ol></div></div>
+        </div>
+        <div class="qa-card" data-qa-panel="standard">
+          <div class="qa-box"><div class="qa-label">访谈问题</div><div class="qa-text"><ol class="qa-list"><li>脚本目前从哪里来，是运营写还是律师写？</li><li>有没有固定表达模板或内容结构？</li><li>是否需要引用具体法律条文、条款号和案例素材？</li></ol></div></div>
+          <div class="qa-box"><div class="qa-label">真实总结 / 提取信息</div><div class="qa-answer"><ol class="qa-list"><li>当前脚本仍需要人工准备，后续可以从手写脚本逐步升级到 AI 辅助生成。</li><li>内容结构应沉淀到 AI 模板库，例如开头引入、案例/法条、风险提示、引导互动。</li><li>医疗法务脚本不能只是普通文案，后续要增强法律条文引用、案例素材输入和合规风险标记。</li></ol></div></div>
+        </div>
+        <div class="qa-card" data-qa-panel="avatar">
+          <div class="qa-box"><div class="qa-label">访谈问题</div><div class="qa-text"><ol class="qa-list"><li>数字人形象是否需要 1:1 还原律师本人？</li><li>声音是否要使用律师原声或克隆声音？</li><li>医疗法务内容的语气和表现应该严肃，还是更有同理心？</li></ol></div></div>
+          <div class="qa-box"><div class="qa-label">真实总结 / 提取信息</div><div class="qa-answer"><ol class="qa-list"><li>形象层面需要数字人库承接，公司律师合集比泛化数字人更符合可信感。</li><li>声音层面需要声音库承接，先支持可选声音，后续再增强律师原声和克隆声音。</li><li>表现层面要保留专业、严肃、温和的可控风格，后续补齐口型同步、手势、表情和背景。</li></ol></div></div>
+        </div>
+        <div class="qa-card" data-qa-panel="pay">
+          <div class="qa-box"><div class="qa-label">访谈问题</div><div class="qa-text"><ol class="qa-list"><li>项目预算范围和可接受的投入方式是什么？</li><li>希望多久看到第一条可演示 Demo？</li><li>是否先做 MVP 验证，再决定是否继续投入完整方案？</li></ol></div></div>
+          <div class="qa-box"><div class="qa-label">真实总结 / 提取信息</div><div class="qa-answer"><ol class="qa-list"><li>访谈将预算、周期、试用和成功标准单独成章，说明投入决策需要有明确边界。</li><li>用户需要先看到可运行 Demo，证明数字人口播能替代真人拍摄的一部分流程。</li><li>MVP 应优先跑通选数字人、写脚本、生成视频、沉淀作品草稿的闭环。</li></ol></div></div>
+        </div>
+        <div class="qa-card" data-qa-panel="metric">
+          <div class="qa-box"><div class="qa-label">访谈问题</div><div class="qa-text"><ol class="qa-list"><li>内容最终怎么变现？</li><li>观众看了视频后如何联系你们？</li><li>从看到视频到真正成交，完整路径是什么？</li></ol></div></div>
+          <div class="qa-box"><div class="qa-label">真实总结 / 提取信息</div><div class="qa-answer"><ol class="qa-list"><li>内容价值落在案源获取和专业信任建立，不只是品牌曝光。</li><li>短视频要承接到咨询、私域或后续沟通链路，所以内容不能只追求播放量。</li><li>后续需要数据看板和发布数据回传，记录播放、点赞、评论等指标，为获客分析做准备。</li></ol></div></div>
+        </div>
+        <div class="qa-card" data-qa-panel="test">
+          <div class="qa-box"><div class="qa-label">访谈问题</div><div class="qa-text"><ol class="qa-list"><li>如果先做试用版，必须包含哪些内容？</li><li>试用多久，或生成多少条之后判断是否继续？</li><li>判断 MVP 成功的标准是什么？</li></ol></div></div>
+          <div class="qa-box"><div class="qa-label">真实总结 / 提取信息</div><div class="qa-answer"><ol class="qa-list"><li>第一阶段要先验证数字人视频生成闭环，现有功能可用 AI 创作页、数字人库、声音库和模板库承接。</li><li>试用应围绕真实医疗法务脚本生成多条样片，观察是否能减少真人拍摄依赖。</li><li>成功标准是能稳定从“选人/上传人像、写脚本、生成视频、保存作品”跑通，合规、剪辑、分发、数据看板作为后续增强。</li></ol></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="findings">
+      <div class="section-head">
+        <div class="section-kicker">03 核心访谈发现</div>
+        <h2>关键发现</h2>
+        <p class="section-desc">真实访谈没有被改写：核心矛盾仍是律师本人、脚本、声音、资产和生产效率。这里把这些发现重新对齐到当前已经具备的六个产品功能。</p>
+      </div>
+      <div class="data-layout">
+        <div class="metric-stack">
+          <div class="metric-card"><div class="metric-value">30</div><div class="metric-label">需求池有效需求</div></div>
+          <div class="metric-card"><div class="metric-value">6</div><div class="metric-label">已具备功能入口</div></div>
+          <div class="metric-card"><div class="metric-value">17</div><div class="metric-label">P0 需求进入路线</div></div>
+          <div class="metric-card"><div class="metric-value">13</div><div class="metric-label">P1 作为增强项</div></div>
+        </div>
+        <div class="findings-grid">
+          <article class="finding-card"><div class="finding-index">01</div><div class="card-title">律师资产</div><div class="card-copy">访谈中的断更问题，本质是律师本人无法持续出镜。首页看板和数字人库先把律所律师整合成可选择、可生产的数字资产。</div></article>
+          <article class="finding-card"><div class="finding-index">02</div><div class="card-title">快速开工</div><div class="card-copy">用户需要替代真人拍摄环节。AI创作页用“选择数字人或上传照片 + 手写脚本”的方式，先跑通从人到视频的生产闭环。</div></article>
+          <article class="finding-card"><div class="finding-index">03</div><div class="card-title">资产沉淀</div><div class="card-copy">真人实拍已经运行两年多，后续会产生作品、草稿和复用素材。我的页面承接数字资产管理，避免内容散落。</div></article>
+          <article class="finding-card"><div class="finding-index">04</div><div class="card-title">专业形象</div><div class="card-copy">访谈担心数字人“像网红不像律师”。数字人库以公司律师合集呈现，让用户从可信律师形象里选择，而不是从泛化形象里挑选。</div></article>
+          <article class="finding-card"><div class="finding-index">05</div><div class="card-title">声音信任</div><div class="card-copy">医疗法务内容需要严肃、温和、可信的表达。声音库承接音色选择和后续律师声音资产沉淀，为声音克隆增强预留空间。</div></article>
+          <article class="finding-card"><div class="finding-index">06</div><div class="card-title">模板控质</div><div class="card-copy">访谈明确脚本需要结构化表达。AI模板库承接开头引入、案例/法条、风险提示、引导互动等专业口播模板。</div></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="pool">
+      <div class="section-head">
+        <div class="section-kicker">04 访谈后分析与需求池</div>
+        <h2>需求沉淀</h2>
+        <p class="section-desc">需求池来自《数字口播人需求池.xlsx》，共 30 条有效需求，已按 P0/P1、功能模块和交付状态整理。</p>
+      </div>
+      <div class="table-panel">
+        <div class="demand-snapshot">
+          <div class="snapshot-head">
+            <div>
+              <div class="snapshot-title">真实需求池记录</div>
+              <div class="snapshot-note">访谈结束后，将原始反馈整理为 REQ 编号、模块、需求描述、进度、优先级、负责人、交付日期和预估工作量。</div>
+            </div>
+            <div class="snapshot-tags">
+              <span>30 条有效需求</span>
+              <span>P0 17 条</span>
+              <span>P1 13 条</span>
+              <span>6 个功能模块</span>
+            </div>
+          </div>
+          <div class="snapshot-grid">
+            <figure class="snapshot-shot">
+              <img src="assets/demand-pool-top.png" alt="数字口播人需求池上半部分，包含 AI脚本生成、数字人视频生成和智能剪辑需求">
+            </figure>
+            <figure class="snapshot-shot">
+              <img src="assets/demand-pool-bottom.png" alt="数字口播人需求池下半部分，包含合规审核、多平台分发和 AI图文生成需求">
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="priority">
+      <div class="section-head">
+        <div class="section-kicker">05 需求分层与优先级</div>
+        <h2>需求分层</h2>
+        <p class="section-desc">需求池仍以真实访谈为基础。这里把优先级改成“现有功能先承接，访谈需求再增强”的版本，避免和当前产品能力脱节。</p>
+      </div>
+      <div class="priority-panel">
+        <div class="pain-grid">
+          <article class="tier-card pain">
+            <div class="tier-label">痛点</div>
+            <ul class="clean-list">
+              <li>律师频繁出差，人不在就拍不了</li>
+              <li>内容产出完全依赖律师本人在场</li>
+              <li>字幕、降噪、选片段、筛脚本占用大量时间</li>
+              <li>数字人必须无缝替换现有拍摄流程</li>
+              <li>法律内容错误会带来合规责任</li>
+            </ul>
+          </article>
+          <article class="tier-card itch">
+            <div class="tier-label">痒点</div>
+            <ul class="clean-list">
+              <li>律师形象要专业，避免“像网红不像律师”</li>
+              <li>脚本需要法律条文来源和案例素材支持</li>
+              <li>合规检测要能区分高/中/低风险</li>
+              <li>旧内容和脚本模板希望沉淀复用</li>
+              <li>多平台发布希望减少重复操作</li>
+            </ul>
+          </article>
+          <article class="tier-card delight">
+            <div class="tier-label">爽点</div>
+            <ul class="clean-list">
+              <li>输入选题关键词即可生成医疗法务脚本</li>
+              <li>一次提交多条脚本，排队批量生成视频</li>
+              <li>自动口型同步、手势表情和专业背景</li>
+              <li>自动字幕、去口误、去废话、去停顿</li>
+              <li>发布后播放、点赞、评论数据回传</li>
+            </ul>
+          </article>
+        </div>
+        <div class="priority-row">
+          <div class="priority-badge">P0</div>
+          <div class="priority-copy">
+            <ol class="priority-list">
+              <li>首页看板：展示律所律师数字人库，并提供定制数字人、制作数字视频入口</li>
+              <li>我的页面：沉淀我的数字资产，包括作品、草稿等</li>
+              <li>AI创作：选择数字人或上传人物照片，手动填写脚本生成视频</li>
+              <li>资源库：数字人库、声音库、AI模板库共同支撑“选人、配音、套模板”</li>
+            </ol>
+          </div>
+        </div>
+        <div class="priority-row">
+          <div class="priority-badge p1">P1</div>
+          <div class="priority-copy">
+            <ol class="priority-list">
+              <li>AI脚本增强：从手写脚本升级为关键词、热点事件辅助生成</li>
+              <li>模板增强：支持案例素材、法律条文、风险提示等结构化字段</li>
+              <li>数字人与声音增强：补齐口型同步、手势表情、律师原声和克隆声音</li>
+              <li>合规增强：敏感表述、法条校验、医疗隐私和风险分级</li>
+            </ol>
+          </div>
+        </div>
+        <div class="priority-row">
+          <div class="priority-badge p2">P2</div>
+          <div class="priority-copy">
+            <ol class="priority-list">
+              <li>多平台分发：抖音、小红书、B站发布和规格适配</li>
+              <li>数据看板：播放量、点赞、评论等数据回传和复盘</li>
+              <li>内容资产检索、复用和二次编辑</li>
+              <li>把“我的页面”扩展为完整内容资产工作台</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="solution">
+      <div class="section-head">
+        <div class="section-kicker">06 从访谈到功能方案</div>
+        <h2>功能推导</h2>
+        <p class="section-desc">这里改成六个现有功能的一一对应：每个入口都能追溯到访谈证据，同时标出还需要继续增强的访谈需求。</p>
+      </div>
+      <div class="mapping-list">
+        <div class="mapping-card">
+          <div class="map-id">首页看板</div>
+          <div class="map-cell"><div class="map-label">用户证据</div><div class="map-value">律师频繁出差，人不在就拍不了，内容生产高度依赖律师本人在场。</div></div>
+          <div class="map-arrow">→</div>
+          <div class="map-cell"><div class="map-label">需求转译</div><div class="map-value">先把律所律师沉淀成可选择的数字人资产，并给出明确生产入口。</div></div>
+          <div class="map-arrow">→</div>
+          <div class="map-cell"><div class="map-label">现有功能</div><div class="map-value">首页看板展示数字人库，提供“定制数字人”和“制作数字视频”两个按钮。<span class="module-tag">已具备</span></div></div>
+        </div>
+        <div class="mapping-card">
+          <div class="map-id">我的页面</div>
+          <div class="map-cell"><div class="map-label">用户证据</div><div class="map-value">真人实拍流程已经运行两年多，内容会持续产生作品、草稿、素材和历史版本。</div></div>
+          <div class="map-arrow">→</div>
+          <div class="map-cell"><div class="map-label">需求转译</div><div class="map-value">数字人口播不能只负责生成，还要沉淀用户自己的数字资产。</div></div>
+          <div class="map-arrow">→</div>
+          <div class="map-cell"><div class="map-label">现有功能</div><div class="map-value">我的页面管理个人数字资产，包括作品、草稿等。<span class="module-tag">已具备</span></div></div>
+        </div>
+        <div class="mapping-card">
+          <div class="map-id">AI创作</div>
+          <div class="map-cell"><div class="map-label">用户证据</div><div class="map-value">访谈希望先看到可运行 Demo，验证数字人口播是否能替代真人拍摄环节。</div></div>
+          <div class="map-arrow">→</div>
+          <div class="map-cell"><div class="map-label">需求转译</div><div class="map-value">先让用户用最短路径完成一次视频生成：选人或上传人像，再输入脚本。</div></div>
+          <div class="map-arrow">→</div>
+          <div class="map-cell"><div class="map-label">现有功能</div><div class="map-value">AI创作页支持选择数字人，或上传人物照片，再手动写脚本制作数字人视频。<span class="module-tag">已具备</span><span class="fit-note">后续接 AI 脚本生成</span></div></div>
+        </div>
+        <div class="mapping-card">
+          <div class="map-id">数字人库</div>
+          <div class="map-cell"><div class="map-label">用户证据</div><div class="map-value">访谈担心数字人形象不够律师化，医疗法务内容需要专业、可信、稳定的出镜形象。</div></div>
+          <div class="map-arrow">→</div>
+          <div class="map-cell"><div class="map-label">需求转译</div><div class="map-value">把公司律师统一沉淀为数字人合集，让用户直接从律师资产中选择。</div></div>
+          <div class="map-arrow">→</div>
+          <div class="map-cell"><div class="map-label">现有功能</div><div class="map-value">数字人库展示公司所有律师合集，也支持在这里选择数字人进入创作。<span class="module-tag">已具备</span></div></div>
+        </div>
+        <div class="mapping-card">
+          <div class="map-id">声音库</div>
+          <div class="map-cell"><div class="map-label">用户证据</div><div class="map-value">数字人口播不只看脸，语气要严肃、温和、可信，才能符合医疗法务内容的专业感。</div></div>
+          <div class="map-arrow">→</div>
+          <div class="map-cell"><div class="map-label">需求转译</div><div class="map-value">把声音作为独立资产管理，为不同律师、不同内容语气提供选择。</div></div>
+          <div class="map-arrow">→</div>
+          <div class="map-cell"><div class="map-label">现有功能</div><div class="map-value">声音库管理数字口播可用声音。<span class="module-tag">已具备</span><span class="fit-note">后续增强律师原声/克隆声音</span></div></div>
+        </div>
+        <div class="mapping-card">
+          <div class="map-id">AI模板库</div>
+          <div class="map-cell"><div class="map-label">用户证据</div><div class="map-value">访谈明确脚本不能是普通文案，需要开头引入、案例/法条、风险提示和引导互动。</div></div>
+          <div class="map-arrow">→</div>
+          <div class="map-cell"><div class="map-label">需求转译</div><div class="map-value">用模板把专业表达结构固化下来，降低每次手写脚本的成本。</div></div>
+          <div class="map-arrow">→</div>
+          <div class="map-cell"><div class="map-label">现有功能</div><div class="map-value">AI模板库沉淀可复用创作模板。<span class="module-tag">已具备</span><span class="fit-note">后续接法律条文和合规提示</span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="roadmap">
+      <div class="section-head">
+        <div class="section-kicker">07 迭代计划与最终总结</div>
+        <h2>未来规划</h2>
+        <p class="section-desc">规划以《访谈问题汇总.pdf》中的 PRD 为准：第一期只做能验证核心价值的 MVP，后续再扩展克隆、剪辑、分发和数据能力。</p>
+      </div>
+      <div class="roadmap">
+        <article class="roadmap-card">
+          <div class="roadmap-stage">MVP 第一期</div>
+          <div class="card-title">验证核心闭环</div>
+          <div class="card-copy">目标是验证“AI 脚本 + 数字人视频 + 基础合规”能否替代真人拍摄环节，解决律师不在场导致的断更风险。</div>
+          <ul class="roadmap-list">
+            <li>AI脚本生成（医疗法务方向）</li>
+            <li>数字人视频生成（通用形象 + 标准配音）</li>
+            <li>合规审核辅助（基础敏感词 + 法条校验）</li>
+            <li>批量生成：一次提交 5 条脚本</li>
+            <li>交付目标：能跑通从选题到视频初稿的可演示 Demo</li>
+          </ul>
+        </article>
+        <article class="roadmap-card">
+          <div class="roadmap-stage">V1.1 提效版</div>
+          <div class="card-title">补强生产效率</div>
+          <div class="card-copy">围绕 Excel 需求池中已拆出的 P0/P1，补齐剪辑和专业表达能力，减少运营在后期上的重复劳动。</div>
+          <ul class="roadmap-list">
+            <li>智能剪辑：自动字幕、AI降噪、去口误废话停顿</li>
+            <li>脚本增强：法律条文引用、案例素材生成、当事人信息脱敏</li>
+            <li>数字人增强：基础手势动作、严肃/温和表情、自定义背景</li>
+            <li>合规增强：风险分级、自定义合规规则库</li>
+            <li>AI图文生成：图文文案、封面/配图、图文合规审核</li>
+          </ul>
+        </article>
+        <article class="roadmap-card">
+          <div class="roadmap-stage">V2.0 增长版</div>
+          <div class="card-title">扩展运营闭环</div>
+          <div class="card-copy">PDF 明确第一期不包含的能力，可作为下一阶段增长能力：从“能生成视频”走向“能分发、能复盘、能复用”。</div>
+          <ul class="roadmap-list">
+            <li>律师本人形象/声音克隆</li>
+            <li>多平台自动分发：抖音、小红书、B站对接与定时发布</li>
+            <li>发布后基础数据回传：播放量、点赞、评论数</li>
+            <li>数据看板：对比真人实拍与数字人口播效果</li>
+            <li>内容资产管理：历史脚本、视频素材检索、复用与二次编辑</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <a class="assistant-float" href="#hero" aria-label="回到顶部">
+    <span class="assistant-icon">AI</span>
+    <span>智能分析助手</span>
+  </a>
+  <script>
+    function bindTabs(triggerSelector, panelSelector, triggerAttr, panelAttr) {
+      const triggers = Array.from(document.querySelectorAll(triggerSelector));
+      const panels = Array.from(document.querySelectorAll(panelSelector));
+      triggers.forEach((trigger) => {
+        trigger.addEventListener("click", () => {
+          const key = trigger.getAttribute(triggerAttr);
+          triggers.forEach((item) => item.classList.toggle("active", item === trigger));
+          panels.forEach((panel) => {
+            panel.classList.toggle("active", panel.getAttribute(panelAttr) === key);
+          });
+        });
+      });
+    }
+
+    bindTabs(".prep-card", ".evidence-detail", "data-prep", "data-prep-panel");
+    bindTabs(".step", ".qa-card", "data-qa", "data-qa-panel");
+  </script>
+</body>
+</html>

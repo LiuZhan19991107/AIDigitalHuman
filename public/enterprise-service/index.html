@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数据看板</title>
+<script src="chart.umd.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --brand-color: #ff7752;
+    --brand-hover: #ff9275;
+    --brand-active: #e1542e;
+    --brand-deep: #eb3200;
+    --brand-bg: #fff8f6;
+    --brand-bg-hover: #fff1ee;
+    --brand-border: #ffd6cb;
+    --gradient-brand: linear-gradient(90deg, #ff673e 21.5%, #ff3729 100%);
+    --gradient-warm-card: linear-gradient(180deg, #ffe3d9 0%, #fff9f7 100%);
+    --gradient-soft-page: linear-gradient(180deg, #f7f8fa 6.7%, #ffffff 100%);
+    --text-primary: #1d2129;
+    --text-title: #1f1f1f;
+    --text-regular: #434343;
+    --text-secondary: #4e5969;
+    --text-tertiary: #86909c;
+    --surface-white: #ffffff;
+    --page-bg: #f7f8fa;
+    --surface-muted: #f5f5f5;
+    --surface-subtle: #f2f3f5;
+    --line: #edeff3;
+    --line-strong: #e5e6ec;
+    --success: #00b42a;
+    --danger: #f54b45;
+    --warning: #ff9a1d;
+    --purple: #9142ff;
+    --shadow-soft: 0 6px 30px rgba(0,0,0,.05);
+    --shadow-panel: 0 8px 32px rgba(20,24,36,.12);
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-2xl: 20px;
+    --radius-pill: 100px;
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    min-height: 100vh;
+    font-family: "PingFang SC", "Helvetica Neue", Helvetica, "Microsoft YaHei", Arial, sans-serif;
+    background:
+      radial-gradient(circle at 8% 4%, rgba(255,119,82,.10), transparent 28%),
+      radial-gradient(circle at 92% 18%, rgba(255,154,29,.10), transparent 25%),
+      var(--gradient-soft-page);
+    color: var(--text-primary);
+    line-height: 1.65;
+    letter-spacing: 0;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255,119,82,.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,119,82,.035) 1px, transparent 1px);
+    background-size: 72px 72px;
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,.62), transparent 58%);
+  }
+  a { color: inherit; text-decoration: none; }
+
+  .header,
+  .section-nav,
+  .filter-bar,
+  .section,
+  .divider,
+  body > div[style] {
+    position: relative;
+    z-index: 1;
+  }
+
+  .header {
+    max-width: 1220px;
+    margin: 0 auto;
+    padding: 72px 24px 28px;
+    background: transparent;
+  }
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 18px;
+    padding: 7px 12px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--brand-border);
+    background: var(--brand-bg);
+    color: var(--brand-deep);
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .header-badge::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--brand-color);
+    box-shadow: 0 0 0 5px rgba(255,119,82,.16);
+  }
+  .header h1 {
+    width: auto;
+    min-height: auto;
+    display: block;
+    margin-bottom: 18px;
+    padding: 0;
+    background: transparent;
+    color: var(--text-title);
+    font-size: clamp(44px, 5.8vw, 76px);
+    line-height: 1.05;
+    font-weight: 800;
+    letter-spacing: 0;
+  }
+  .header h1 span { color: var(--text-title); }
+  .header p {
+    max-width: 760px;
+    color: var(--text-secondary);
+    font-size: 17px;
+    line-height: 1.85;
+    padding-bottom: 0;
+  }
+
+  .filter-bar {
+    max-width: 1220px;
+    margin: 0 auto 20px;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) auto;
+    align-items: end;
+    gap: 12px;
+    padding: 16px;
+    background: var(--surface-white);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    box-shadow: var(--shadow-soft);
+  }
+  .filter label {
+    display: block;
+    color: var(--text-tertiary);
+    font-size: 12px;
+    font-weight: 750;
+    margin-bottom: 6px;
+  }
+  .filter-value {
+    min-height: 38px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 12px;
+    color: var(--text-title);
+    background: var(--surface-subtle);
+    border: 1px solid var(--line);
+    font-size: 13px;
+    font-weight: 650;
+  }
+  .filter-value.select::after {
+    content: "";
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 6px solid var(--brand-color);
+    margin-left: 10px;
+  }
+
+  .section {
+    max-width: 1220px;
+    margin: 0 auto;
+    padding: 52px 24px;
+    background: transparent;
+    scroll-margin-top: 90px;
+  }
+  .section-header {
+    margin-bottom: 24px;
+    display: block;
+    max-width: 760px;
+  }
+  .section-tag {
+    display: block;
+    margin-bottom: 10px;
+    color: var(--brand-deep);
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+  .section-title {
+    margin-bottom: 10px;
+    color: var(--text-title);
+    font-size: clamp(28px, 3.2vw, 40px);
+    line-height: 1.18;
+    font-weight: 800;
+  }
+  .section-desc {
+    color: var(--text-secondary);
+    font-size: 16px;
+    line-height: 1.8;
+  }
+  .divider { display: none; }
+
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 14px;
+    border: 0;
+  }
+  .kpi {
+    min-height: 166px;
+    padding: 22px 18px 42px;
+    position: relative;
+    overflow: hidden;
+    background: var(--surface-white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-soft);
+    transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+  }
+  .kpi:hover {
+    transform: translateY(-2px);
+    border-color: var(--brand-border);
+    box-shadow: 0 10px 32px rgba(235,50,0,.08);
+    background: var(--surface-white);
+  }
+  .kpi::before {
+    content: "";
+    position: absolute;
+    left: 18px;
+    right: 18px;
+    bottom: 22px;
+    height: 10px;
+    border-radius: var(--radius-pill);
+    border: 0;
+    background: var(--surface-subtle);
+  }
+  .kpi::after {
+    content: "";
+    position: absolute;
+    left: 18px;
+    bottom: 22px;
+    height: 10px;
+    border-radius: var(--radius-pill);
+    background: var(--gradient-brand);
+  }
+  .kpi:nth-child(1)::after { width: 82%; }
+  .kpi:nth-child(2)::after { width: 86%; }
+  .kpi:nth-child(3)::after { width: 72%; }
+  .kpi:nth-child(4)::after { width: 68%; }
+  .kpi:nth-child(5)::after { width: 78%; }
+  .kpi-label {
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 750;
+  }
+  .kpi-value {
+    color: var(--text-title) !important;
+    font-size: 34px;
+    line-height: 1.1;
+    font-weight: 850;
+  }
+  .kpi-sub {
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    color: var(--brand-deep);
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .kpi-up, .kpi-down { color: var(--brand-deep); }
+  .kpi-up::before { content: "▲ "; color: var(--brand-color); }
+  .kpi-down::before { content: "▼ "; color: var(--brand-color); }
+  .kpi-old { color: var(--text-tertiary); font-weight: 500; }
+
+  .chart-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .chart-card {
+    margin-bottom: 16px;
+    padding: 22px;
+    background: var(--surface-white);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    box-shadow: var(--shadow-soft);
+  }
+  .chart-grid-2 .chart-card,
+  .chart-grid-2 .chart-card:nth-child(2n) { border-right: 1px solid var(--line); }
+  .chart-title {
+    margin-bottom: 4px;
+    color: var(--text-title);
+    font-size: 17px;
+    font-weight: 800;
+  }
+  .chart-subtitle {
+    margin-bottom: 16px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  .chart-wrap { position: relative; }
+
+  .compare-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xl);
+    color: var(--text-secondary);
+    background: var(--surface-white);
+    font-size: 13px;
+  }
+  .compare-table th {
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+    color: var(--text-title);
+    background: var(--surface-subtle);
+    font-size: 12px;
+    font-weight: 800;
+  }
+  .compare-table td {
+    padding: 13px 14px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  .compare-table tr:last-child td { border-bottom: 0; }
+  .compare-table tr:hover td { background: #fbfcfd; }
+  .compare-table .highlight { color: var(--brand-deep); font-weight: 800; }
+  .compare-table .step-name { color: var(--text-title); font-weight: 800; }
+  .arrow-down { color: var(--brand-deep); font-weight: 800; }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    border: 0;
+  }
+  .summary-card {
+    padding: 24px;
+    text-align: left;
+    background: var(--surface-white);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    box-shadow: var(--shadow-soft);
+    transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+  }
+  .summary-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--brand-border);
+    box-shadow: 0 10px 32px rgba(235,50,0,.08);
+    background: var(--surface-white);
+  }
+  .summary-icon {
+    width: 42px;
+    height: 42px;
+    margin: 0 0 14px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    background: var(--brand-bg) !important;
+    color: var(--brand-deep) !important;
+    font-size: 18px;
+    font-weight: 850;
+  }
+  .summary-card h3 {
+    margin-bottom: 8px;
+    color: var(--text-title);
+    font-size: 19px;
+    font-weight: 800;
+  }
+  .summary-card p {
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.75;
+  }
+
+  .action-btn {
+    min-height: 42px;
+    padding: 0 20px;
+    border: 0;
+    border-radius: var(--radius-pill);
+    color: #fff9f7;
+    background: var(--gradient-brand);
+    font-size: 14px;
+    font-weight: 750;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 12px 28px rgba(235,50,0,.18);
+  }
+  .filter-export {
+    display: flex;
+    align-items: end;
+    justify-content: flex-end;
+  }
+
+  .quality-legend {
+    display: flex;
+    gap: 18px;
+    justify-content: center;
+    margin-top: 12px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; color: var(--text-secondary); font-size: 12px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+</style>
+</head>
+<body>
+
+<!-- ===== Header ===== -->
+<div class="header">
+  <div class="header-badge">AI 数字人口播 价值评估</div>
+  <h1>数据看板</h1>
+  <p>用浅色橙红官网风格，量化 AI 数字人在效率、成本、产能、获客和质量上的业务价值</p>
+</div>
+
+<div class="filter-bar">
+  <div class="filter">
+    <label>START DATE</label>
+    <div class="filter-value">2026/07/01</div>
+  </div>
+  <div class="filter">
+    <label>END DATE</label>
+    <div class="filter-value">2026/07/31</div>
+  </div>
+  <div class="filter">
+    <label>SELECT SCENARIO</label>
+    <div class="filter-value select">律师垂类短视频</div>
+  </div>
+  <div class="filter">
+    <label>DATE COMPARISON</label>
+    <div class="filter-value select">传统制作对比</div>
+  </div>
+  <div class="filter">
+    <label>DATE GRANULARITY</label>
+    <div class="filter-value select">Month</div>
+  </div>
+  <div class="filter-export">
+    <button class="action-btn" onclick="window.print()">导出 PDF 报告</button>
+  </div>
+</div>
+
+<!-- ===== 1. KPI 卡片 ===== -->
+<div class="section" id="kpi">
+  <div class="section-header">
+    <div class="section-tag">OVERVIEW</div>
+    <div class="section-title">核心指标</div>
+    <div class="section-desc">核心指标一览——给老板看的"第一眼结论"</div>
+  </div>
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="kpi-label">单条视频制作时长</div>
+      <div class="kpi-value" style="color:var(--accent-light)">20<span style="font-size:16px;font-weight:400">min</span></div>
+      <div class="kpi-sub kpi-down">99.3% <span class="kpi-old">传统 2天</span></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">单条视频成本</div>
+      <div class="kpi-value" style="color:var(--green)">¥10</div>
+      <div class="kpi-sub kpi-down">99.5% <span class="kpi-old">传统 ¥1,875</span></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">月产能（条/月）</div>
+      <div class="kpi-value" style="color:var(--purple)">300</div>
+      <div class="kpi-sub kpi-up">2400% <span class="kpi-old">传统 12</span></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">合规通过率</div>
+      <div class="kpi-value" style="color:var(--cyan)">94.7<span style="font-size:16px;font-weight:400">%</span></div>
+      <div class="kpi-sub kpi-up">4.2% 较人工审核</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">获客率（私信开口率）</div>
+      <div class="kpi-value" style="color:var(--orange)">0.1<span style="font-size:16px;font-weight:400">%</span></div>
+      <div class="kpi-sub kpi-up">2x <span class="kpi-old">传统律师垂类短视频 0.05%</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ===== 2. 制作流程效率对比 ===== -->
+<div class="section" id="efficiency">
+  <div class="section-header">
+    <div class="section-tag">EFFICIENCY</div>
+    <div class="section-title">效率对比</div>
+    <div class="section-desc">逐环节拆解，看清"快在哪里"——传统制作 vs AI数字人全流程耗时（小时）</div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-title">各环节耗时对比</div>
+    <div class="chart-subtitle">传统流程总计 2 天（48 小时） → AI流程总计 0.33 小时（20分钟），整体提效 99.3%</div>
+    <div class="chart-wrap" style="height:320px;">
+      <canvas id="chartEfficiency"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-title">环节提效明细</div>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>制作环节</th>
+          <th>传统方式</th>
+          <th>AI数字人</th>
+          <th>节省时间</th>
+          <th>提效比</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="step-name">脚本撰写</td>
+          <td>8h（选题、资料检索、法务+文案协作）</td>
+          <td class="highlight">5min（AI生成+人工微调）</td>
+          <td class="arrow-down">↓ 99%</td>
+          <td>96x</td>
+        </tr>
+        <tr>
+          <td class="step-name">真人拍摄</td>
+          <td>12h（排期、布景、妆造、拍摄、补拍）</td>
+          <td class="highlight">0min（数字人直接生成）</td>
+          <td class="arrow-down">↓ 100%</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td class="step-name">视频剪辑</td>
+          <td>16h（粗剪、字幕、包装、修改）</td>
+          <td class="highlight">5min（自动字幕+智能剪辑）</td>
+          <td class="arrow-down">↓ 99%</td>
+          <td>192x</td>
+        </tr>
+        <tr>
+          <td class="step-name">合规审核</td>
+          <td>8h（法务逐条审核+修改复核）</td>
+          <td class="highlight">5min（AI预审+人工复核）</td>
+          <td class="arrow-down">↓ 99%</td>
+          <td>96x</td>
+        </tr>
+        <tr>
+          <td class="step-name">多平台发布</td>
+          <td>4h（封面标题、平台适配、定时发布）</td>
+          <td class="highlight">5min（一键多平台分发）</td>
+          <td class="arrow-down">↓ 98%</td>
+          <td>48x</td>
+        </tr>
+        <tr style="background:#f4f8fa;">
+          <td class="step-name" style="font-weight:700;">合计</td>
+          <td style="font-weight:600;">48h / 条（2天）</td>
+          <td class="highlight" style="font-weight:700;">0.33h / 条（20min）</td>
+          <td class="arrow-down" style="font-weight:700;">↓ 99.3%</td>
+          <td style="font-weight:700;">144x</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ===== 3. 成本结构拆解 ===== -->
+<div class="section" id="cost">
+  <div class="section-header">
+    <div class="section-tag">COST</div>
+    <div class="section-title">成本结构拆解</div>
+    <div class="section-desc">用瀑布图讲清"钱的故事"——从传统 ¥1,875/条 到 AI ¥10/条，每一项省在哪</div>
+  </div>
+
+  <div class="chart-grid-2">
+    <div class="chart-card">
+      <div class="chart-title">传统 vs AI 成本结构对比</div>
+      <div class="chart-subtitle">各成本项占比拆解（¥/条）</div>
+      <div class="chart-wrap" style="height:300px;">
+        <canvas id="chartCostBreakdown"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">降本瀑布图</div>
+      <div class="chart-subtitle">从传统 ¥1,875 到 AI ¥10，各环节节省金额</div>
+      <div class="chart-wrap" style="height:300px;">
+        <canvas id="chartWaterfall"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-title">成本明细对照</div>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>成本项</th>
+          <th>传统方式（¥/条）</th>
+          <th>AI数字人（¥/条）</th>
+          <th>节省</th>
+          <th>降幅</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="step-name">人力成本</td>
+          <td>¥1,000（编导+主持+剪辑）</td>
+          <td class="highlight">¥0（自动生成+抽检复核摊销）</td>
+          <td class="arrow-down">¥1,000</td>
+          <td>100%</td>
+        </tr>
+        <tr>
+          <td class="step-name">设备场地</td>
+          <td>¥300（影棚+灯光+摄像）</td>
+          <td class="highlight">¥0（纯线上生成）</td>
+          <td class="arrow-down">¥300</td>
+          <td>100%</td>
+        </tr>
+        <tr>
+          <td class="step-name">后期制作</td>
+          <td>¥300（剪辑+特效+字幕）</td>
+          <td class="highlight">¥5（AI自动处理）</td>
+          <td class="arrow-down">¥295</td>
+          <td>98%</td>
+        </tr>
+        <tr>
+          <td class="step-name">合规审核</td>
+          <td>¥175（法务逐条审）</td>
+          <td class="highlight">¥3（AI预审+抽检）</td>
+          <td class="arrow-down">¥172</td>
+          <td>98%</td>
+        </tr>
+        <tr>
+          <td class="step-name">平台分发</td>
+          <td>¥100（人工多平台操作）</td>
+          <td class="highlight">¥2（一键分发）</td>
+          <td class="arrow-down">¥98</td>
+          <td>98%</td>
+        </tr>
+        <tr style="background:#f4f8fa;">
+          <td class="step-name" style="font-weight:700;">合计</td>
+          <td style="font-weight:700;">¥1,875</td>
+          <td class="highlight" style="font-weight:700;">¥10</td>
+          <td class="arrow-down" style="font-weight:700;">¥1,865</td>
+          <td style="font-weight:700;color:var(--green);">↓ 99.5%</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ===== 4. 产能提升 ===== -->
+<div class="section" id="capacity">
+  <div class="section-header">
+    <div class="section-tag">CAPACITY</div>
+    <div class="section-title">产能提升</div>
+    <div class="section-desc">同样的人力投入，产出从月均12条提升到300条——规模效应可视化</div>
+  </div>
+
+  <div class="chart-grid-2">
+    <div class="chart-card">
+      <div class="chart-title">月产能增长趋势</div>
+      <div class="chart-subtitle">随平台功能完善，产能持续爬坡（条/月）</div>
+      <div class="chart-wrap" style="height:280px;">
+        <canvas id="chartCapacity"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">同等投入产出对比</div>
+      <div class="chart-subtitle">3人团队 · 月产出对比</div>
+      <div class="chart-wrap" style="height:280px;">
+        <canvas id="chartCapacityCompare"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ===== 5. 获客率 ===== -->
+<div class="section" id="acquisition">
+  <div class="section-header">
+    <div class="section-tag">ACQUISITION</div>
+    <div class="section-title">获客率</div>
+    <div class="section-desc">从曝光到私信开口，量化 AI 数字人对律师垂类短视频获客效率的提升</div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-title">传统律师垂类短视频 vs AI数字人获客率</div>
+    <div class="chart-subtitle">私信开口率从 0.05% 提升到 0.1%，获客效率提升 2 倍</div>
+    <div class="chart-wrap" style="height:340px;">
+      <canvas id="chartAcquisition"></canvas>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ===== 6. 质量评估 ===== -->
+<div class="section" id="quality">
+  <div class="section-header">
+    <div class="section-tag">QUALITY</div>
+    <div class="section-title">质量评估</div>
+    <div class="section-desc">打消"便宜没好货"的顾虑——AI数字人在各质量维度上对标传统制作</div>
+  </div>
+
+  <div class="chart-grid-2">
+    <div class="chart-card">
+      <div class="chart-title">质量维度雷达图</div>
+      <div class="chart-subtitle">AI数字人在6个维度上与传统制作对比，按各维度相对表现归一化（满分100）</div>
+      <div class="chart-wrap" style="height:300px;">
+        <canvas id="chartQuality"></canvas>
+      </div>
+      <div class="quality-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--text-dim)"></div>传统制作</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--accent-light)"></div>AI数字人</div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">质量指标明细</div>
+      <table class="compare-table" style="margin-top:8px;">
+        <thead>
+          <tr>
+            <th>质量维度</th>
+            <th>传统制作</th>
+            <th>AI数字人</th>
+            <th>评价</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="step-name">播放量</td>
+            <td>65</td><td>88</td>
+            <td style="color:var(--green);">显著更优</td>
+          </tr>
+          <tr>
+            <td class="step-name">互动数</td>
+            <td>60</td><td>84</td>
+            <td style="color:var(--green);">显著更优</td>
+          </tr>
+          <tr>
+            <td class="step-name">转发数</td>
+            <td>58</td><td>80</td>
+            <td style="color:var(--green);">更优</td>
+          </tr>
+          <tr>
+            <td class="step-name">后端获客</td>
+            <td>0.05%</td><td>0.1%</td>
+            <td style="color:var(--green);">显著更优</td>
+          </tr>
+          <tr>
+            <td class="step-name">画面清晰度</td>
+            <td>88%</td><td>95%</td>
+            <td style="color:var(--green);">更优</td>
+          </tr>
+          <tr>
+            <td class="step-name">视频产能</td>
+            <td>12条/月</td><td>300条/月</td>
+            <td style="color:var(--green);">显著更优</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ===== 7. 总结建议 ===== -->
+<div class="section" id="summary">
+  <div class="section-header">
+    <div class="section-tag">SUMMARY</div>
+    <div class="section-title">总结建议</div>
+    <div class="section-desc">基于以上数据，给出行动指引</div>
+  </div>
+
+  <div class="summary-grid">
+    <div class="summary-card">
+      <div class="summary-icon" style="background:var(--green-bg);color:var(--green);">快</div>
+      <h3>效率提升 144 倍</h3>
+      <p>单条视频从2天缩短到20分钟，全流程提效99.3%。法务团队从"做视频"变回"做专业"。</p>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon" style="background:var(--orange-bg);color:var(--orange);">省</div>
+      <h3>成本降低 99.5%</h3>
+      <p>单条成本从¥1,875降到¥10。人力、设备、后期、审核、分发五项全降，单条节省 ¥1,865。</p>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon" style="background:var(--purple-bg);color:var(--purple);">客</div>
+      <h3>获客率提升 5 倍</h3>
+      <p>律师垂类短视频私信开口率从0.05%提升到0.1%。同样曝光下，AI数字人带来更多有效线索。</p>
+    </div>
+  </div>
+</div>
+
+<div style="height:48px;"></div>
+
+<!-- ===== Scripts ===== -->
+<script>
+// Chart defaults
+Chart.defaults.color = '#806f66';
+Chart.defaults.borderColor = '#f6ece7';
+Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, PingFang SC, sans-serif';
+
+// ===== 1. Efficiency Comparison =====
+new Chart(document.getElementById('chartEfficiency'), {
+  type: 'bar',
+  data: {
+    labels: ['脚本撰写', '真人拍摄', '视频剪辑', '合规审核', '多平台发布'],
+    datasets: [{
+      label: '传统方式（小时）',
+      data: [8, 12, 16, 8, 4],
+      backgroundColor: 'rgba(216,204,197,0.55)',
+      borderColor: '#d8ccc5',
+      borderWidth: 1,
+      borderRadius: 0,
+      barPercentage: 0.7,
+    },{
+      label: 'AI数字人（小时）',
+      data: [0.083, 0, 0.083, 0.083, 0.083],
+      backgroundColor: 'rgba(255,116,72,0.78)',
+      borderColor: '#ff7448',
+      borderWidth: 1,
+      borderRadius: 0,
+      barPercentage: 0.7,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top', labels: { usePointStyle: true, pointStyle: 'circle', padding: 20 } },
+      tooltip: {
+        callbacks: {
+          label: ctx => {
+            const v = ctx.raw;
+            if (v === 0) return ctx.dataset.label + ': 0min';
+            if (v >= 1) return ctx.dataset.label + ': ' + v + 'h';
+            return ctx.dataset.label + ': ' + (v * 60).toFixed(0) + 'min';
+          }
+        }
+      }
+    },
+    scales: {
+      x: { grid: { display: false } },
+      y: {
+        grid: { color: '#f6ece7' },
+        title: { display: true, text: '耗时（小时）', font: { size: 11 } },
+        ticks: {
+          callback: v => v === 0 ? '0' : v + 'h'
+        }
+      }
+    }
+  }
+});
+
+// ===== 2. Cost Breakdown =====
+new Chart(document.getElementById('chartCostBreakdown'), {
+  type: 'bar',
+  data: {
+    labels: ['人力成本', '设备场地', '后期制作', '合规审核', '平台分发'],
+    datasets: [{
+      label: '传统 ¥/条',
+      data: [1000, 300, 300, 175, 100],
+      backgroundColor: 'rgba(216,204,197,0.55)',
+      borderColor: '#d8ccc5',
+      borderWidth: 1,
+      borderRadius: 0,
+      barPercentage: 0.65,
+    },{
+      label: 'AI ¥/条',
+      data: [0, 0, 5, 3, 2],
+      backgroundColor: 'rgba(255,116,72,0.78)',
+      borderColor: '#ff7448',
+      borderWidth: 1,
+      borderRadius: 0,
+      barPercentage: 0.65,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top', labels: { usePointStyle: true, pointStyle: 'circle', padding: 16 } },
+      tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ¥' + ctx.raw.toLocaleString() } }
+    },
+    scales: {
+      x: { grid: { display: false } },
+      y: {
+        grid: { color: '#f6ece7' },
+        ticks: { callback: v => '¥' + v.toLocaleString() }
+      }
+    }
+  }
+});
+
+// ===== 3. Waterfall Chart =====
+(function() {
+  const labels = ['传统成本', '人力节省', '设备节省', '后期节省', '审核节省', '分发节省', 'AI成本'];
+  // invisible base for floating bars
+  const bases =   [0, 875, 575, 280, 108, 10, 0];
+  // visible bar values
+  const values =  [1875, 1000, 300, 295, 172, 98, 10];
+  const colors = labels.map((l, i) => {
+    if (i === 0) return 'rgba(216,204,197,0.7)';
+    if (i === labels.length - 1) return 'rgba(255,116,72,0.82)';
+    return 'rgba(255,116,72,0.58)';
+  });
+  const borderColors = labels.map((l, i) => {
+    if (i === 0) return '#d8ccc5';
+    if (i === labels.length - 1) return '#ff7448';
+    return '#ff7448';
+  });
+
+  new Chart(document.getElementById('chartWaterfall'), {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'base',
+        data: bases,
+        backgroundColor: 'transparent',
+        borderWidth: 0,
+        barPercentage: 0.5,
+      },{
+        label: '金额',
+        data: values,
+        backgroundColor: colors,
+        borderColor: borderColors,
+        borderWidth: 1,
+        borderRadius: 0,
+        barPercentage: 0.5,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          filter: ctx => ctx.datasetIndex === 1,
+          callbacks: {
+            label: ctx => {
+              const i = ctx.dataIndex;
+              if (i === 0) return '传统总成本: ¥1,875';
+              if (i === labels.length - 1) return 'AI总成本: ¥10';
+              return '节省: ¥' + ctx.raw;
+            }
+          }
+        }
+      },
+      scales: {
+        x: { stacked: true, grid: { display: false } },
+        y: {
+          stacked: true,
+          grid: { color: '#f6ece7' },
+          ticks: { callback: v => '¥' + v.toLocaleString() },
+          max: 2200,
+        }
+      }
+    }
+  });
+})();
+
+// ===== 4. Capacity Trend =====
+new Chart(document.getElementById('chartCapacity'), {
+  type: 'line',
+  data: {
+    labels: ['M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9', 'M10', 'M11', 'M12'],
+    datasets: [{
+      label: 'AI数字人（条/月）',
+      data: [50, 80, 120, 160, 200, 240, 260, 280, 290, 300, 300, 310],
+      borderColor: '#ff7448',
+      backgroundColor: 'rgba(255,116,72,0.08)',
+      fill: true,
+      tension: 0.4,
+      pointRadius: 4,
+      pointBackgroundColor: '#ff7448',
+      borderWidth: 2.5,
+    },{
+      label: '传统方式（条/月）',
+      data: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+      borderColor: '#d8ccc5',
+      borderDash: [6, 4],
+      pointRadius: 0,
+      borderWidth: 1.5,
+      fill: false,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top', labels: { usePointStyle: true, pointStyle: 'circle', padding: 16 } }
+    },
+    scales: {
+      x: { grid: { display: false } },
+      y: { grid: { color: '#f6ece7' }, title: { display: true, text: '条/月', font: { size: 11 } } }
+    }
+  }
+});
+
+// ===== 5. Capacity Compare =====
+new Chart(document.getElementById('chartCapacityCompare'), {
+  type: 'bar',
+  data: {
+    labels: ['月产视频量', '月产脚本量', '月覆盖平台', '月合规审核量'],
+    datasets: [{
+      label: '传统方式',
+      data: [12, 40, 2, 20],
+      backgroundColor: 'rgba(216,204,197,0.55)',
+      borderColor: '#d8ccc5',
+      borderWidth: 1,
+      borderRadius: 0,
+      barPercentage: 0.55,
+    },{
+      label: 'AI数字人',
+      data: [300, 800, 5, 300],
+      backgroundColor: 'rgba(255,116,72,0.78)',
+      borderColor: '#ff7448',
+      borderWidth: 1,
+      borderRadius: 0,
+      barPercentage: 0.55,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top', labels: { usePointStyle: true, pointStyle: 'circle', padding: 16 } },
+      tooltip: {
+        callbacks: {
+          afterBody: ctx => {
+            const idx = ctx[0].dataIndex;
+            const trad = [12, 40, 2, 20][idx];
+            const ai = [300, 800, 5, 300][idx];
+            return '提升: ' + (ai / trad).toFixed(0) + 'x';
+          }
+        }
+      }
+    },
+    scales: {
+      x: { grid: { display: false } },
+      y: { grid: { color: '#f6ece7' }, type: 'logarithmic',
+        ticks: { callback: v => v }
+      }
+    }
+  }
+});
+
+// ===== 6. Acquisition Rate Chart =====
+new Chart(document.getElementById('chartAcquisition'), {
+  type: 'bar',
+  data: {
+    labels: ['传统律师垂类短视频', 'AI数字人'],
+    datasets: [{
+      label: '私信开口率',
+      data: [0.05, 0.1],
+      backgroundColor: ['rgba(216,204,197,0.55)', 'rgba(216,79,42,0.82)'],
+      borderColor: ['#d8ccc5', '#d84f2a'],
+      borderWidth: 1,
+      borderRadius: 0,
+      barPercentage: 0.42,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => {
+            const leads = ctx.raw;
+            return ctx.dataset.label + ': ' + leads + '%';
+          },
+          afterBody: ctx => {
+            const views = 100000;
+            const expected = Math.round(views * ctx[0].raw / 100);
+            return '每10万播放预计私信开口: ' + expected + '人';
+          }
+        }
+      }
+    },
+    scales: {
+      x: { grid: { display: false } },
+      y: {
+        grid: { color: '#f6ece7' },
+        title: { display: true, text: '私信开口率', font: { size: 11 } },
+        ticks: { callback: v => v + '%' },
+        suggestedMax: 0.12
+      }
+    }
+  }
+});
+
+// ===== 7. Quality Radar =====
+new Chart(document.getElementById('chartQuality'), {
+  type: 'radar',
+  data: {
+    labels: ['播放量', '互动数', '转发数', '后端获客', '画面清晰度', '视频产能'],
+    datasets: [{
+      label: '传统制作',
+      data: [65, 60, 58, 50, 88, 4],
+      borderColor: '#d8ccc5',
+      backgroundColor: 'rgba(216,204,197,0.12)',
+      pointBackgroundColor: '#d8ccc5',
+      borderWidth: 2,
+    },{
+      label: 'AI数字人',
+      data: [88, 84, 80, 100, 95, 100],
+      borderColor: '#ff7448',
+      backgroundColor: 'rgba(255,116,72,0.14)',
+      pointBackgroundColor: '#ff7448',
+      borderWidth: 2,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      r: {
+        min: 0, max: 100,
+        grid: { color: '#f6ece7' },
+        angleLines: { color: '#f6ece7' },
+        pointLabels: { font: { size: 12 }, color: '#806f66' },
+        ticks: { display: false, stepSize: 20 }
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>
